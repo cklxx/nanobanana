@@ -78,7 +78,7 @@ function ResultCard({ url, prompt }) {
     <Card className="overflow-hidden">
       <img src={url} alt="生成结果" className="w-full" />
       <CardContent className="flex flex-col gap-3">
-        <p className="text-sm text-slate-300 leading-relaxed">{prompt}</p>
+        <p className="result-prompt text-sm text-slate-300 leading-relaxed">{prompt}</p>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="ghost" className="border border-slate-800 text-slate-100">
             <a href={url} download target="_blank" rel="noreferrer">
