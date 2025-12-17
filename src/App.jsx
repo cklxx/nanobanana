@@ -15,6 +15,12 @@ const DOUDAO_PREDICT_URL = 'https://aihubmix.com/v1/models/doubao/doubao-seedrea
 const REMAIN_MULTIPLIER = 1000;
 const NANOBANANA_COST = 2000;
 
+const DOUDAO_SIZE_MAP = {
+  '1K': '1024*1024',
+  '2K': '1536*1536',
+  '4K': '2048*2048'
+};
+
 const promptTemplates = [
   {
     title: '极简科技感 PPT 封面',
@@ -290,7 +296,7 @@ function App() {
             input: {
               model: 'doubao-seedream-4-5-251128',
               prompt: prompt.trim(),
-              size: resolution,
+              size: DOUDAO_SIZE_MAP[resolution] || DOUDAO_SIZE_MAP['1K'],
               sequential_image_generation: mode === 'multi' ? 'auto' : 'disabled',
               sequential_image_generation_options: mode === 'multi' ? { max_images: multiImageData?.length || 4 } : undefined,
               image: buildDoubaoImageField(),
