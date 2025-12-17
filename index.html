@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIHubMix 无水印 4K 图片工坊</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero__text">
+        <p class="eyebrow">AIHubMix · Gemini 图片 API 工具页</p>
+        <h1>一键生成 <span class="gradient">4K 无水印</span> 视觉稿</h1>
+        <p class="lede">填入你的 API Key 即可实时查看额度、调用图片生成。内置 PPT 场景与电商视觉提示词，点击即可复制并发送到生成区。</p>
+        <div class="hero__actions">
+          <button class="button primary" id="scroll-to-form">开始创作</button>
+          <a class="button ghost" href="https://docs.aihubmix.com/cn/api/Gemini-Guides" target="_blank" rel="noreferrer">查看官方 API 文档</a>
+        </div>
+        <div class="hero__meta">
+          <div class="meta-pill">支持 4096×4096 4K 分辨率</div>
+          <div class="meta-pill">支持关闭水印</div>
+          <div class="meta-pill">自动部署到 GitHub Pages</div>
+        </div>
+      </div>
+      <div class="hero__glass">
+        <div class="glass-card">
+          <p class="label">示例预览</p>
+          <div class="preview-grid">
+            <div class="preview-card">清透科技封面</div>
+            <div class="preview-card">极简电商主图</div>
+            <div class="preview-card">演示型 PPT</div>
+            <div class="preview-card">治愈感插画</div>
+          </div>
+          <p class="hint">提示词灵感随时可复制到下面的生成表单</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" id="api-panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">API Key 管理</p>
+            <h2>绑定 Key、查看剩余额度</h2>
+            <p class="caption">仅在浏览器本地存储，支持随时更新。额度查询会直接调用 <code>https://aihubmix.com/dashboard/billing/remain</code>。</p>
+          </div>
+          <div class="pill success" id="quota-pill">额度未查询</div>
+        </div>
+        <form class="card form" id="api-form">
+          <div class="field">
+            <label for="api-key">API Key</label>
+            <div class="input-row">
+              <input id="api-key" name="api-key" type="password" placeholder="sk-..." autocomplete="off" required />
+              <button type="button" class="button ghost" id="toggle-visibility">显示</button>
+            </div>
+            <p class="hint">Key 仅保存在本地 <code>localStorage</code> 中，不会上传到服务器。</p>
+          </div>
+          <div class="form__footer">
+            <button type="submit" class="button primary">保存并查询额度</button>
+            <button type="button" class="button ghost" id="clear-key">清除 Key</button>
+            <div class="status" id="quota-status">尚未查询。</div>
+          </div>
+        </form>
+        <div class="quota-details">
+          <div class="stat-card">
+            <p class="eyebrow">接口返回</p>
+            <p class="stat-value" id="quota-raw">等待查询...</p>
+            <p class="caption">原始字段 <code>total_usage</code></p>
+          </div>
+          <div class="stat-card">
+            <p class="eyebrow">折算剩余额度</p>
+            <p class="stat-value" id="quota-converted">等待查询...</p>
+            <p class="caption">按照 total_usage × 8 计算</p>
+          </div>
+          <div class="stat-card">
+            <p class="eyebrow">单次生成消耗</p>
+            <p class="stat-value" id="per-image-usage">生成后显示</p>
+            <p class="caption">展示最近一次图片的 usage</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="prompt-library">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">灵感模板</p>
+            <h2>PPT & 电商常用 Prompt</h2>
+            <p class="caption">点击卡片即可复制，适配 Gemini 图片生成参数，默认 4K 无水印。</p>
+          </div>
+          <div class="pill">可直接粘贴到下方表单</div>
+        </div>
+        <div class="prompt-grid" id="prompt-grid"></div>
+      </section>
+
+      <section class="panel" id="generator">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">图片生成</p>
+            <h2>提交请求</h2>
+            <p class="caption">使用 Gemini/Imagen API 生成高清视觉稿。可调整模型、分辨率、水印等参数。</p>
+          </div>
+          <div class="pill info" id="generation-status-pill">等待输入</div>
+        </div>
+        <form class="card form" id="generate-form">
+          <div class="field">
+            <label for="prompt">提示词</label>
+            <textarea id="prompt" name="prompt" rows="4" placeholder="描述你想要的画面..." required></textarea>
+          </div>
+          <div class="field grid-3 align-end">
+            <div>
+              <label for="mode">生成模式</label>
+              <select id="mode" name="mode">
+                <option value="text">文生图</option>
+                <option value="img2img">图生图</option>
+                <option value="multi">多图参考</option>
+              </select>
+              <p class="hint">选择合适的模式，图生图/多图需要上传参考图。</p>
+            </div>
+            <div class="upload" id="img2img-wrap">
+              <label for="base-image">上传参考图 (1 张)</label>
+              <input id="base-image" name="base-image" type="file" accept="image/*" />
+              <div class="thumbs" id="base-thumb"></div>
+            </div>
+            <div class="upload" id="multi-wrap">
+              <label for="ref-images">多图参考 (最多 3 张)</label>
+              <input id="ref-images" name="ref-images" type="file" accept="image/*" multiple />
+              <div class="thumbs" id="multi-thumbs"></div>
+            </div>
+          </div>
+          <div class="field grid-3">
+            <div>
+              <label for="model">模型</label>
+              <input id="model" name="model" type="text" value="imagen-3.0-generate-001" />
+              <p class="hint">可根据官方文档调整，例如 <code>gemini-2.0-flash-exp</code>。</p>
+            </div>
+            <div>
+              <label for="size">分辨率</label>
+              <select id="size" name="size">
+                <option value="4096x4096">4K 正方形 4096×4096</option>
+                <option value="3840x2160">4K 超宽 3840×2160</option>
+                <option value="2048x2048">2K 正方形 2048×2048</option>
+              </select>
+            </div>
+            <div>
+              <label for="style">画面风格</label>
+              <select id="style" name="style">
+                <option value="clean">极简干净</option>
+                <option value="product">电商氛围感</option>
+                <option value="deck">PPT 封面</option>
+                <option value="illustration">插画/手绘</option>
+              </select>
+            </div>
+          </div>
+          <div class="field grid-3">
+            <div>
+              <label for="quality">清晰度</label>
+              <select id="quality" name="quality">
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+              </select>
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="watermark" name="watermark" checked />
+              <label for="watermark">关闭水印</label>
+            </div>
+            <div>
+              <label for="seed">随机种子 (可选)</label>
+              <input id="seed" name="seed" type="number" placeholder="如 42" />
+            </div>
+          </div>
+          <div class="form__footer">
+            <button type="submit" class="button primary">生成 4K 图片</button>
+            <div class="status" id="generation-status">等待请求。</div>
+          </div>
+        </form>
+
+        <div class="card results" id="results">
+          <div class="results__header">
+            <div>
+              <p class="eyebrow">生成结果</p>
+              <h3>图片预览</h3>
+            </div>
+            <div class="pill" id="result-count">暂无图片</div>
+          </div>
+          <div class="result-grid" id="result-grid">
+            <p class="placeholder">提交请求后图片会展示在这里。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>
+        <p class="eyebrow">部署</p>
+        <p>此站点包含 GitHub Actions 配置，推送到仓库即可自动发布到 GitHub Pages。</p>
+      </div>
+      <div class="footer__links">
+        <a href="https://aihubmix.com/" target="_blank" rel="noreferrer">AIHubMix 官网</a>
+        <a href="https://docs.aihubmix.com/cn/api/Gemini-Guides" target="_blank" rel="noreferrer">API 文档</a>
+      </div>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
