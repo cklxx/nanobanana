@@ -10,7 +10,10 @@ import './index.css';
 import { cn } from './lib/utils';
 
 const BILLING_URL = 'https://aihubmix.com/dashboard/billing/remain';
-const IMAGE_URL_BASE = 'https://aihubmix.com/gemini/v1beta/models';
+const GEMINI_URL_BASE = 'https://aihubmix.com/gemini/v1beta/models';
+const DOUDAO_PREDICT_URL = 'https://aihubmix.com/v1/models/doubao/doubao-seedream-4-5-251128/predictions';
+const REMAIN_MULTIPLIER = 1000;
+const NANOBANANA_COST = 2000;
 
 const promptTemplates = [
   {
@@ -78,7 +81,7 @@ function ResultCard({ url, prompt }) {
     <Card className="overflow-hidden">
       <img src={url} alt="生成结果" className="w-full" />
       <CardContent className="flex flex-col gap-3">
-        <p className="text-sm text-slate-300 leading-relaxed">{prompt}</p>
+        <p className="result-prompt text-sm text-slate-300 leading-relaxed">{prompt}</p>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="ghost" className="border border-slate-800 text-slate-100">
             <a href={url} download target="_blank" rel="noreferrer">
@@ -109,7 +112,7 @@ function App() {
   const [resolution, setResolution] = useState('4K');
   const [quotaBadge, setQuotaBadge] = useState({ text: '未查询', tone: 'muted' });
   const [quotaStatus, setQuotaStatus] = useState('未查询');
-  const [perImageUsage, setPerImageUsage] = useState('生成后会展示本次 usage 消耗');
+  const [perImageUsage, setPerImageUsage] = useState('本次生成会展示 usage，nanobanana 单次约 2000');
   const [generationStatus, setGenerationStatus] = useState({ text: '等待', tone: 'info' });
   const [results, setResults] = useState([]);
   const [baseFile, setBaseFile] = useState([]);
@@ -136,8 +139,8 @@ function App() {
       const data = await resp.json();
       const rawRemain = Number(data?.total_usage ?? data?.remain ?? data?.credit);
       const hasNumber = Number.isFinite(rawRemain);
-      const converted = hasNumber ? rawRemain * 9 : null;
-      const remainText = hasNumber ? `${converted}` : '未知';
+      const converted = hasNumber ? rawRemain * REMAIN_MULTIPLIER : null;
+      const remainText = hasNumber ? converted.toFixed(3) : '未知';
       setQuotaStatus('额度查询成功');
       setQuotaBadge({ text: `剩余 ${remainText}`, tone: 'success' });
     } catch (error) {
@@ -167,6 +170,12 @@ function App() {
 
   const normalizeImageUrl = (payload) => {
     if (!payload) return null;
+    if (Array.isArray(payload.output)) {
+      const first = payload.output[0];
+      if (typeof first === 'string') return first;
+      if (first?.url) return first.url;
+    }
+    if (payload.output?.url) return payload.output.url;
     if (payload.data?.[0]?.url) return payload.data[0].url;
     if (payload.images?.[0]?.url) return payload.images[0].url;
     const base64 = payload.data?.[0]?.b64_json || payload.images?.[0]?.b64_json;
@@ -205,21 +214,9 @@ function App() {
     setGenerationStatus({ text: '生成中，耗时较长，请耐心等待...', tone: 'info' });
 
     const parts = [{ text: prompt.trim() }];
-    const payload = {
-      contents: [
-        {
-          role: 'user',
-          parts
-        }
-      ],
-      generationConfig: {
-        responseModalities: ['TEXT', 'IMAGE'],
-        imageConfig: {
-          aspectRatio,
-          imageSize: resolution
-        }
-      }
-    };
+    const isDoubao = model.startsWith('doubao');
+    let img2imgData = null;
+    let multiImageData = null;
 
     try {
       if (mode === 'img2img') {
@@ -230,7 +227,10 @@ function App() {
           return;
         }
         const base64 = await fileToBase64(file);
-        parts.push({ inlineData: { mimeType: file.type || 'image/png', data: base64 } });
+        img2imgData = { base64, file };
+        if (!isDoubao) {
+          parts.push({ inlineData: { mimeType: file.type || 'image/png', data: base64 } });
+        }
       } else if (mode === 'multi') {
         const files = multiFiles.slice(0, 3);
         if (!files.length) {
@@ -239,10 +239,13 @@ function App() {
           return;
         }
         const refs = await Promise.all(files.map((file) => fileToBase64(file)));
-        refs.forEach((data, index) => {
-          const file = files[index];
-          parts.push({ inlineData: { mimeType: file.type || 'image/png', data } });
-        });
+        multiImageData = refs.map((data, index) => ({ base64: data, file: files[index] }));
+        if (!isDoubao) {
+          refs.forEach((data, index) => {
+            const file = files[index];
+            parts.push({ inlineData: { mimeType: file.type || 'image/png', data } });
+          });
+        }
       }
     } catch (error) {
       setGenerationStatus({ text: error.message || '读取图片失败', tone: 'error' });
@@ -250,14 +253,70 @@ function App() {
       return;
     }
 
+    const buildDoubaoImageField = () => {
+      if (mode === 'img2img' && img2imgData) {
+        const mime = img2imgData.file?.type || 'image/png';
+        return `data:${mime};base64,${img2imgData.base64}`;
+      }
+      if (mode === 'multi' && multiImageData?.length) {
+        return multiImageData.map((item) => {
+          const mime = item.file?.type || 'image/png';
+          return `data:${mime};base64,${item.base64}`;
+        });
+      }
+      return undefined;
+    };
+
     try {
-      const endpoint = `${IMAGE_URL_BASE}/${encodeURIComponent(model)}:generateContent`;
+      const isGemini = !isDoubao;
+
+      const payload = isGemini
+        ? {
+            contents: [
+              {
+                role: 'user',
+                parts
+              }
+            ],
+            generationConfig: {
+              responseModalities: ['TEXT', 'IMAGE'],
+              imageConfig: {
+                aspectRatio,
+                imageSize: resolution
+              }
+            }
+          }
+        : {
+            input: {
+              model: 'doubao-seedream-4-5-251128',
+              prompt: prompt.trim(),
+              size: resolution,
+              sequential_image_generation: mode === 'multi' ? 'auto' : 'disabled',
+              sequential_image_generation_options: mode === 'multi' ? { max_images: multiImageData?.length || 4 } : undefined,
+              image: buildDoubaoImageField(),
+              response_format: 'url',
+              stream: false,
+              watermark: true
+            }
+          };
+
+      const endpoint = isGemini
+        ? `${GEMINI_URL_BASE}/${encodeURIComponent(model)}:generateContent`
+        : DOUDAO_PREDICT_URL;
+
+      const headers = isGemini
+        ? {
+            'content-type': 'application/json',
+            'x-goog-api-key': key
+          }
+        : {
+            'content-type': 'application/json',
+            Authorization: `Bearer ${key}`
+          };
+
       const resp = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-goog-api-key': key
-        },
+        headers,
         body: JSON.stringify(payload)
       });
 
@@ -273,10 +332,10 @@ function App() {
       }
       const usageValue = Number(data?.usage?.total_usage ?? data?.usage?.image_usage ?? data?.usage);
       if (Number.isFinite(usageValue)) {
-        const converted = usageValue * 9;
-        setPerImageUsage(`本次生成折算消耗：${converted}`);
+        const converted = (usageValue * REMAIN_MULTIPLIER).toFixed(3);
+        setPerImageUsage(`本次生成折算消耗：${converted}（nanobanana 单次约 ${NANOBANANA_COST}）`);
       } else {
-        setPerImageUsage('本次生成未返回 usage 字段，暂无法展示单次消耗。');
+        setPerImageUsage(`本次生成未返回 usage 字段，nanobanana 单次约 ${NANOBANANA_COST}`);
       }
       setResults((prev) => [{ url: imageUrl, prompt }, ...prev]);
       setGenerationStatus({ text: '完成', tone: 'success' });
@@ -296,12 +355,13 @@ function App() {
   }, [apiKey]);
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+    <div className="mx-auto max-w-screen-2xl px-4 py-6 space-y-6 sm:px-6 lg:space-y-8 lg:px-10 xl:px-14">
       <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Nanobanana</p>
           <h1 className="text-3xl font-semibold text-slate-50">AI 图片生成</h1>
           <p className="text-slate-400 text-sm">浏览器直接调用 AIHubMix / Gemini API</p>
+          <p className="text-xs text-slate-500">额度显示为千倍且保留三位小数，nanobanana 单次生成约消耗 2000</p>
         </div>
         <Badge variant={generationStatus.tone === 'success' ? 'success' : 'info'} className="self-start">
           {generationStatus.text}
@@ -321,7 +381,7 @@ function App() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
+            <div className="grid gap-6 md:grid-cols-[2fr_1fr] xl:grid-cols-[2.2fr_1fr]">
               <div className="space-y-4">
                 <div className="rounded-2xl border border-slate-800/70 bg-slate-900/60 p-4 space-y-3">
                   <div className="space-y-2">
@@ -453,7 +513,7 @@ function App() {
                       生成后展示。
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                       {results.map((item) => (
                         <ResultCard key={item.url} url={item.url} prompt={item.prompt} />
                       ))}
