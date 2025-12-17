@@ -163,7 +163,7 @@ async function fetchQuota() {
     const hasNumber = Number.isFinite(rawRemain);
     const converted = hasNumber ? rawRemain * 9 : null;
     const remainText = hasNumber ? `${converted}` : '未知';
-    setStatus(quotaStatus, `剩余 ${remainText}`);
+    setStatus(quotaStatus, '额度查询成功');
     setPill(quotaPill, `剩余 ${remainText}`, 'success');
     if (quotaRaw) {
       quotaRaw.textContent = hasNumber
@@ -254,8 +254,8 @@ async function generateImage(event) {
     return;
   }
 
-  setStatus(generationStatus, '生成中...');
-  setPill(generationStatusPill, '生成中', 'info');
+  setStatus(generationStatus, '生成中，耗时较长，请耐心等待...');
+  setPill(generationStatusPill, '生成中 · 稍等', 'info');
 
   try {
     const endpoint = `${IMAGE_URL_BASE}/${encodeURIComponent(model)}:generateContent`;

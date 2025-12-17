@@ -1,126 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 图片生成</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="page-shell">
-    <main>
-      <section class="panel" id="generator">
-        <div class="panel__header">
-          <h1>生成</h1>
-          <div class="pill info" id="generation-status-pill">等待</div>
-        </div>
-        <div class="stack">
-          <div class="card form compact" id="key-card">
-            <div class="field">
-              <label for="api-key">API Key</label>
-              <div class="input-row">
-                <input id="api-key" name="api-key" type="password" placeholder="sk-..." autocomplete="off" required />
-                <button type="button" class="button ghost" id="toggle-visibility">显示</button>
-                <button type="button" class="button ghost" id="save-key">保存</button>
-                <button type="button" class="button ghost" id="check-quota">额度</button>
-                <button type="button" class="button ghost" id="clear-key">清除</button>
-              </div>
-              <div class="status" id="quota-status">未查询</div>
-            </div>
-            <div class="pill success" id="quota-pill">额度</div>
-          </div>
-
-          <form class="card form" id="generate-form">
-            <div class="field">
-              <label for="prompt">提示词</label>
-              <textarea id="prompt" name="prompt" rows="3" placeholder="描述画面..." required></textarea>
-            </div>
-            <div class="field grid-3 align-end">
-              <div>
-                <label for="mode">模式</label>
-                <select id="mode" name="mode">
-                  <option value="text">文生图</option>
-                  <option value="img2img">图生图</option>
-                  <option value="multi">多图</option>
-                </select>
-              </div>
-              <div class="upload" id="img2img-wrap">
-                <label for="base-image">参考图</label>
-                <input id="base-image" name="base-image" type="file" accept="image/*" />
-                <div class="thumbs" id="base-thumb"></div>
-              </div>
-              <div class="upload" id="multi-wrap">
-                <label for="ref-images">多图参考</label>
-                <input id="ref-images" name="ref-images" type="file" accept="image/*" multiple />
-                <div class="thumbs" id="multi-thumbs"></div>
-              </div>
-            </div>
-            <div class="field grid-3">
-              <div>
-                <label for="model">模型</label>
-                <select id="model" name="model">
-                  <option value="gemini-3-pro-image-preview">nanobanana pro</option>
-                  <option value="doubao-seedream-4-5">doubao-seedream-4-5</option>
-                </select>
-              </div>
-              <div>
-                <label for="aspect-ratio">画幅比例</label>
-                <select id="aspect-ratio" name="aspect-ratio">
-                  <option value="1:1">1:1</option>
-                  <option value="3:4">3:4</option>
-                  <option value="4:3">4:3</option>
-                  <option value="9:16">9:16</option>
-                  <option value="16:9">16:9</option>
-                  <option value="21:9">21:9</option>
-                  <option value="2:3">2:3</option>
-                  <option value="3:2">3:2</option>
-                  <option value="4:5">4:5</option>
-                  <option value="5:4">5:4</option>
-                </select>
-              </div>
-              <div>
-                <label for="resolution">分辨率</label>
-                <select id="resolution" name="resolution">
-                  <option value="1K">1K</option>
-                  <option value="2K">2K</option>
-                  <option value="4K" selected>4K</option>
-                </select>
-              </div>
-            </div>
-            <div class="form__footer">
-              <button type="submit" class="button primary">生成</button>
-              <div class="status" id="generation-status">等待</div>
-            </div>
-          </form>
-
-          <div class="card results" id="results">
-            <div class="results__header">
-              <h3>图片</h3>
-              <div class="pill" id="result-count">暂无</div>
-            </div>
-            <div class="result-grid" id="result-grid">
-              <p class="placeholder">生成后展示。</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" id="prompt-library">
-        <div class="panel__header">
-          <h2>模板</h2>
-          <div class="pill">点击填充</div>
-        </div>
-        <div class="prompt-grid" id="prompt-grid"></div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <span class="contact">联系 wx：tcck1</span>
-    </footer>
-  </div>
-  <script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 图片生成</title>
+  </head>
+  <body class="bg-background text-foreground">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
