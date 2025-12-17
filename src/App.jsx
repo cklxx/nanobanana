@@ -58,9 +58,9 @@ function useStoredState(key, initial) {
 
 function StatusText({ tone = 'muted', children }) {
   const toneClass = {
-    muted: 'text-slate-400',
-    success: 'text-emerald-200',
-    error: 'text-red-200'
+    muted: 'text-slate-500',
+    success: 'text-emerald-700',
+    error: 'text-rose-600'
   }[tone];
   return <p className={cn('text-sm', toneClass)}>{children}</p>;
 }
@@ -78,12 +78,12 @@ function ThumbList({ files }) {
 
 function ResultCard({ url, prompt }) {
   return (
-    <Card className="overflow-hidden">
+      <Card className="overflow-hidden">
       <img src={url} alt="生成结果" className="w-full" />
       <CardContent className="flex flex-col gap-3">
-        <p className="result-prompt text-sm text-slate-300 leading-relaxed">{prompt}</p>
+        <p className="result-prompt text-sm text-slate-600 leading-relaxed">{prompt}</p>
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="ghost" className="border border-slate-800 text-slate-100">
+          <Button asChild variant="ghost" className="border border-slate-200 text-slate-800">
             <a href={url} download target="_blank" rel="noreferrer">
               下载
             </a>
@@ -355,12 +355,12 @@ function App() {
   }, [apiKey]);
 
   return (
-    <div className="w-full px-4 py-6 space-y-6 sm:px-6 lg:space-y-8 lg:px-10 xl:px-14 2xl:px-20">
+    <div className="mx-auto w-full max-w-none px-4 py-7 space-y-6 sm:px-6 lg:space-y-8 lg:px-10 xl:px-14 2xl:px-16">
       <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Nanobanana</p>
-          <h1 className="text-3xl font-semibold text-slate-50">AI 图片生成</h1>
-          <p className="text-slate-400 text-sm">浏览器直接调用 AIHubMix / Gemini API</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Nanobanana</p>
+          <h1 className="text-3xl font-semibold text-slate-900">AI 图片生成</h1>
+          <p className="text-slate-600 text-sm">浏览器直接调用 AIHubMix / Gemini API</p>
           <p className="text-xs text-slate-500">额度显示为千倍且保留三位小数，nanobanana 单次生成约消耗 2000</p>
         </div>
         <Badge variant={generationStatus.tone === 'success' ? 'success' : 'info'} className="self-start">
@@ -370,10 +370,10 @@ function App() {
 
       <div className="card-grid">
         <Card>
-          <CardHeader className="border-b border-slate-800/60">
+          <CardHeader className="border-b border-slate-200/80">
             <div className="space-y-1">
               <h2 className="text-xl font-semibold">生成</h2>
-              <p className="text-sm text-slate-400">填写提示词，上传参考图，直接获取结果</p>
+              <p className="text-sm text-slate-600">填写提示词，上传参考图，直接获取结果</p>
             </div>
             <Badge variant={generationStatus.tone === 'success' ? 'success' : generationStatus.tone === 'error' ? 'destructive' : 'info'}>
               {generationStatus.text}
@@ -383,7 +383,7 @@ function App() {
           <CardContent className="space-y-4">
             <div className="grid gap-6 md:grid-cols-[2fr_1fr] xl:grid-cols-[2.2fr_1fr]">
               <div className="space-y-4">
-                <div className="rounded-2xl border border-slate-800/70 bg-slate-900/60 p-4 space-y-3">
+                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 space-y-3 shadow-sm">
                   <div className="space-y-2">
                     <Label htmlFor="api-key">API Key</Label>
                     <div className="flex flex-wrap gap-2">
@@ -509,7 +509,7 @@ function App() {
                     <Badge variant={resultCount ? 'info' : 'muted'}>{resultCount ? `${resultCount} 张` : '暂无'}</Badge>
                   </div>
                   {results.length === 0 ? (
-                    <div className="rounded-2xl border border-slate-800/70 bg-slate-900/50 p-6 text-slate-400">
+                    <div className="rounded-2xl border border-slate-200 bg-white/70 p-6 text-slate-600">
                       生成后展示。
                     </div>
                   ) : (
@@ -524,9 +524,9 @@ function App() {
 
               <div className="space-y-4">
                 <Card className="h-full">
-                  <CardHeader className="border-b border-slate-800/60">
+                  <CardHeader className="border-b border-slate-200/80">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.25em] text-slate-400">模板</p>
+                      <p className="text-xs uppercase tracking-[0.25em] text-slate-500">模板</p>
                       <h3 className="text-lg font-semibold">快捷提示</h3>
                     </div>
                     <Badge variant="muted">点击填充</Badge>
@@ -535,21 +535,21 @@ function App() {
                     {promptTemplates.map((item) => (
                       <div
                         key={item.title}
-                        className="prompt-card rounded-2xl border border-slate-800/70 bg-slate-900/50 p-4 shadow-sm cursor-pointer"
+                        className="prompt-card rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm cursor-pointer hover:shadow-[0_14px_40px_rgba(148,163,184,0.18)]"
                         onClick={() => handlePromptFill(item)}
                       >
                         <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="text-xs font-medium text-indigo-200 bg-indigo-500/15 px-2 py-1 rounded-full">{item.tag}</span>
-                          <span className="text-[12px] text-slate-400">点击填入</span>
+                          <span className="text-xs font-medium text-indigo-700 bg-indigo-100 px-2 py-1 rounded-full">{item.tag}</span>
+                          <span className="text-[12px] text-slate-500">点击填入</span>
                         </div>
-                        <h4 className="text-base font-semibold text-slate-50">{item.title}</h4>
-                        <p className="text-sm text-slate-400 leading-relaxed mt-1">{item.body}</p>
+                        <h4 className="text-base font-semibold text-slate-900">{item.title}</h4>
+                        <p className="text-sm text-slate-600 leading-relaxed mt-1">{item.body}</p>
                       </div>
                     ))}
                   </CardContent>
                 </Card>
-                <div className="rounded-2xl border border-slate-800/70 bg-slate-900/60 p-4 text-slate-400 text-sm">
-                  <p className="font-semibold text-slate-200">联系</p>
+                <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 text-slate-600 text-sm shadow-sm">
+                  <p className="font-semibold text-slate-800">联系</p>
                   <p>微信：tcck1</p>
                 </div>
               </div>
