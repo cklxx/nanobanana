@@ -7,18 +7,28 @@
 - 提供 PPT 与电商常用 Prompt 模板，可一键复制
 - 生成后自动刷新额度并展示本次 usage
 - GitHub Actions 自动部署到 Pages，推送到 `work` 分支即可发布
+- 生成结果卡片下的提示词自动截断，避免过长内容占满页面
 
-## 本地预览
+## 本地开发
 
 ```bash
-python -m http.server 8000
-# 浏览器访问 http://localhost:8000
+npm install
+npm run dev
+# 浏览器访问 http://localhost:5173
+```
+
+## 构建与预览
+
+```bash
+npm run build
+npm run preview
 ```
 
 ## 自定义
-- 修改 `index.html` 里的文案或提示词。
-- 若官方 API 体积或参数更新，可在 `script.js` 中调整 `IMAGE_URL` 与请求体。
+- 修改 React 入口 `src/main.jsx` 或页面组件里的文案与提示词。
+- 若官方 API 体积或参数更新，可在 `src/App.jsx`（或相关调用处）调整接口与请求体。
 - 默认把 API Key 存在浏览器 `localStorage`，不会上传到服务器。
 
-## 部署
-仓库已经包含 `.github/workflows/deploy.yml`，推送到 `work` 分支后工作流会自动构建并发布到 GitHub Pages。
+## 部署与 CI
+- GitHub Actions 会在推送到 `work` 或 `main` 时自动执行 `npm run build` 并部署 `dist` 到 GitHub Pages，对应访问路径为 `https://cklxx.github.io/nanobanana/`。
+- 额外的 `CI` 工作流会在 Push/PR 时跑一次 `npm run build`，保证同样的构建流程在本地与线上保持一致。
