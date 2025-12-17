@@ -218,14 +218,13 @@ async function generateImage(event) {
         parts
       }
     ],
-    config: {
+    generationConfig: {
       responseModalities: ['TEXT', 'IMAGE'],
       imageConfig: {
         aspectRatio: aspectRatio,
         imageSize: resolution
       }
-    },
-    user: 'gh-pages-demo'
+    }
   };
 
   try {
