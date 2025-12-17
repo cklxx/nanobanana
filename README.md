@@ -5,7 +5,7 @@
 - 输入 API Key 后自动查询额度：`https://aihubmix.com/dashboard/billing/remain`
 - 直接调用图片生成接口（默认 4K 无水印示例请求），支持文生图 / 图生图 / 多图参考三种模式：`https://aihubmix.com/v1/images/generate`
 - 提供 PPT 与电商常用 Prompt 模板，可一键复制
-- 生成后自动刷新额度并展示本次 usage（含折算 ×8）
+- 生成后自动刷新额度并展示本次 usage
 - GitHub Actions 自动部署到 Pages，推送到 `work` 分支即可发布
 
 ## 本地预览

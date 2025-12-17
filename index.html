@@ -41,61 +41,6 @@
     </header>
 
     <main>
-      <section class="panel" id="api-panel">
-        <div class="panel__header">
-          <div>
-            <p class="eyebrow">API Key 管理</p>
-            <h2>绑定 Key、查看剩余额度</h2>
-            <p class="caption">仅在浏览器本地存储，支持随时更新。额度查询会直接调用 <code>https://aihubmix.com/dashboard/billing/remain</code>。</p>
-          </div>
-          <div class="pill success" id="quota-pill">额度未查询</div>
-        </div>
-        <form class="card form" id="api-form">
-          <div class="field">
-            <label for="api-key">API Key</label>
-            <div class="input-row">
-              <input id="api-key" name="api-key" type="password" placeholder="sk-..." autocomplete="off" required />
-              <button type="button" class="button ghost" id="toggle-visibility">显示</button>
-            </div>
-            <p class="hint">Key 仅保存在本地 <code>localStorage</code> 中，不会上传到服务器。</p>
-          </div>
-          <div class="form__footer">
-            <button type="submit" class="button primary">保存并查询额度</button>
-            <button type="button" class="button ghost" id="clear-key">清除 Key</button>
-            <div class="status" id="quota-status">尚未查询。</div>
-          </div>
-        </form>
-        <div class="quota-details">
-          <div class="stat-card">
-            <p class="eyebrow">接口返回</p>
-            <p class="stat-value" id="quota-raw">等待查询...</p>
-            <p class="caption">原始字段 <code>total_usage</code></p>
-          </div>
-          <div class="stat-card">
-            <p class="eyebrow">折算剩余额度</p>
-            <p class="stat-value" id="quota-converted">等待查询...</p>
-            <p class="caption">按照 total_usage × 8 计算</p>
-          </div>
-          <div class="stat-card">
-            <p class="eyebrow">单次生成消耗</p>
-            <p class="stat-value" id="per-image-usage">生成后显示</p>
-            <p class="caption">展示最近一次图片的 usage</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" id="prompt-library">
-        <div class="panel__header">
-          <div>
-            <p class="eyebrow">灵感模板</p>
-            <h2>PPT & 电商常用 Prompt</h2>
-            <p class="caption">点击卡片即可复制，适配 Gemini 图片生成参数，默认 4K 无水印。</p>
-          </div>
-          <div class="pill">可直接粘贴到下方表单</div>
-        </div>
-        <div class="prompt-grid" id="prompt-grid"></div>
-      </section>
-
       <section class="panel" id="generator">
         <div class="panel__header">
           <div>
@@ -191,6 +136,62 @@
           </div>
         </div>
       </section>
+
+      <section class="panel" id="prompt-library">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">灵感模板</p>
+            <h2>PPT & 电商常用 Prompt</h2>
+            <p class="caption">点击卡片即可复制，适配 Gemini 图片生成参数，默认 4K 无水印。</p>
+          </div>
+          <div class="pill">可直接粘贴到上方表单</div>
+        </div>
+        <div class="prompt-grid" id="prompt-grid"></div>
+      </section>
+
+      <section class="panel" id="api-panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">API Key 管理</p>
+            <h2>绑定 Key、查看剩余额度</h2>
+            <p class="caption">仅在浏览器本地存储，支持随时更新。额度查询会直接调用 <code>https://aihubmix.com/dashboard/billing/remain</code>。</p>
+          </div>
+          <div class="pill success" id="quota-pill">额度未查询</div>
+        </div>
+        <form class="card form" id="api-form">
+          <div class="field">
+            <label for="api-key">API Key</label>
+            <div class="input-row">
+              <input id="api-key" name="api-key" type="password" placeholder="sk-..." autocomplete="off" required />
+              <button type="button" class="button ghost" id="toggle-visibility">显示</button>
+            </div>
+            <p class="hint">Key 仅保存在本地 <code>localStorage</code> 中，不会上传到服务器。</p>
+          </div>
+          <div class="form__footer">
+            <button type="submit" class="button primary">保存并查询额度</button>
+            <button type="button" class="button ghost" id="clear-key">清除 Key</button>
+            <div class="status" id="quota-status">尚未查询。</div>
+          </div>
+        </form>
+        <div class="quota-details">
+          <div class="stat-card">
+            <p class="eyebrow">接口返回</p>
+            <p class="stat-value" id="quota-raw">等待查询...</p>
+            <p class="caption">原始字段 <code>total_usage</code></p>
+          </div>
+          <div class="stat-card">
+            <p class="eyebrow">折算剩余额度</p>
+            <p class="stat-value" id="quota-converted">等待查询...</p>
+            <p class="caption">显示折算后的可用额度</p>
+          </div>
+          <div class="stat-card">
+            <p class="eyebrow">单次生成消耗</p>
+            <p class="stat-value" id="per-image-usage">生成后显示</p>
+            <p class="caption">展示最近一次图片的 usage</p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <footer class="footer">
@@ -201,6 +202,7 @@
       <div class="footer__links">
         <a href="https://aihubmix.com/" target="_blank" rel="noreferrer">AIHubMix 官网</a>
         <a href="https://docs.aihubmix.com/cn/api/Gemini-Guides" target="_blank" rel="noreferrer">API 文档</a>
+        <span>联系 wx：tcckl1</span>
       </div>
     </footer>
   </div>
