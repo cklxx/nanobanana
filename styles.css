@@ -413,3 +413,40 @@ textarea {
     padding: 32px 16px;
   }
 }
+
+@media (max-width: 720px) {
+  .hero__text h1 {
+    font-size: 32px;
+  }
+
+  .panel__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .input-row {
+    flex-direction: column;
+  }
+
+  .form__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer__links {
+    flex-direction: column;
+  }
+}

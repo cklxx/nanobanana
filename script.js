@@ -175,8 +175,8 @@ async function fetchQuota() {
     const data = await resp.json();
     const rawRemain = Number(data?.total_usage ?? data?.remain ?? data?.credit);
     const hasNumber = Number.isFinite(rawRemain);
-    const converted = hasNumber ? rawRemain * 8 : null;
-    const remainText = hasNumber ? `${converted}（total_usage×8）` : '未知';
+    const converted = hasNumber ? rawRemain * 9 : null;
+    const remainText = hasNumber ? `${converted}` : '未知';
     setStatus(quotaStatus, `剩余额度：${remainText}`);
     setPill(quotaPill, `剩余额度 ${remainText}`, 'success');
     if (quotaRaw) {
@@ -186,7 +186,7 @@ async function fetchQuota() {
     }
     if (quotaConverted) {
       quotaConverted.textContent = hasNumber
-        ? `折算后剩余额度（×8）：${converted}`
+        ? `折算后剩余额度：${converted}`
         : '暂无法换算额度';
     }
   } catch (error) {
@@ -294,8 +294,8 @@ async function generateImage(event) {
     );
     if (perImageUsage) {
       if (Number.isFinite(usageValue)) {
-        const converted = usageValue * 8;
-        perImageUsage.textContent = `本次生成消耗：${usageValue}（折算 ${converted}）`;
+        const converted = usageValue * 9;
+        perImageUsage.textContent = `本次生成折算消耗：${converted}`;
       } else {
         perImageUsage.textContent = '本次生成未返回 usage 字段，暂无法展示单次消耗。';
       }
@@ -360,7 +360,7 @@ function setupEvents() {
   toggleVisibility.addEventListener('click', togglePassword);
   clearKeyButton.addEventListener('click', clearKey);
   document.getElementById('scroll-to-form').addEventListener('click', () => {
-    document.getElementById('api-panel').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('generator').scrollIntoView({ behavior: 'smooth' });
   });
   modeSelect?.addEventListener('change', updateModeVisibility);
   baseImageInput?.addEventListener('change', (e) => {
