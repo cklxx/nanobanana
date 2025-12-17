@@ -355,7 +355,7 @@ function App() {
   }, [apiKey]);
 
   return (
-    <div className="mx-auto max-w-screen-2xl px-4 py-6 space-y-6 sm:px-6 lg:space-y-8 lg:px-10 xl:px-14">
+    <div className="w-full px-4 py-6 space-y-6 sm:px-6 lg:space-y-8 lg:px-10 xl:px-14 2xl:px-20">
       <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="space-y-1">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Nanobanana</p>
